@@ -1,0 +1,88 @@
+﻿@{
+    Layout = null;
+}
+@using NewModel
+@model NewModel.UserInfo
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ShowAddInfo</title>
+    <script src="~/Scripts/jquery-1.7.1.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/MyAjaxForm.js"></script>
+    <script type="text/javascript">
+        //提交表单
+        function SubForm() {
+            $("#addForm").submit();
+        }
+        function afterAdd(data) {
+            alert(data);
+           location.reload();
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <table align="center" width="400">
+            <tbody>
+                <tr>
+                    <td>
+                        <table class="dataTable" cellpadding="2" cellspacing="2" align="center" border="0" name="Form1_1" id="Form1_1" width="98%px">
+                            <tbody>
+                                @using (Ajax.BeginForm("ModifyPassWord", new { }, new AjaxOptions() { OnSuccess = "afterAdd" }, new { id = "addForm" }))
+                                {
+                                    <tr>
+                                        <td width="120" align="right"> 
+                                            登录帐号：
+                                        </td>
+                                        <td width="232">
+                                            <input type="hidden" name="id" value="@Model.Id" />
+                                            <input type="text" name="UserName" id="UserName" class="input" maxlength="32" value="@Model.UserName" size="24" style="width:150px;height:20px" readonly>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="120" align="right">
+                                            旧密码：
+                                        </td>
+                                        <td width="232">
+                                            <input type="password" name="password" id="password" class="input" maxlength="32" size="24" style="width:150px; height:20px"><font color="red">*必填</font>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="120" align="right">
+                                            确认密码：
+                                        </td>
+                                        <td width="232">
+                                            <input type="password" name="firstPassword" id="firstPassword" class="input" maxlength="32"  size="24" style="width:150px; height:20px"><font color="red">*必填</font>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td width="120" align="right">
+                                            确认新密码：
+                                        </td>
+                                        <td width="232">
+                                            <input type="password" name="secondPassword" id="secondPassword" class="input" maxlength="32"  size="24" style="width:150px; height:20px"><font color="red">*必填</font>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="center" colspan="2">
+                                            <br>
+                                            <input type="submit" value="保 存" class="button" onclick="validate(this)">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <input type="reset" class="button" value="重 置" id="button2" name="button2">
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

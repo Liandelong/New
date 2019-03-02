@@ -1,0 +1,43 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>添加新闻类型</title>
+    <script src="~/Scripts/jquery-1.7.1.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/MyAjaxForm.js"></script>
+    <script type="text/javascript">
+        //提交表单
+        function SubForm() {
+            $("#addForm").submit();
+        }
+        function afterAdd(data) {
+            window.parent.afterAdd(data);
+            parent.location.reload();
+        }
+    </script>
+</head>
+<body>
+    <div> 
+        @using (Ajax.BeginForm("AddNewTypeInfo", new { }, new AjaxOptions() { OnSuccess = "afterAdd" }, new { id = "addForm" }))
+        {
+            <table class="dataTable" cellpadding="2" cellspacing="2" align="center" border="0" name="Form1_1" id="Form1_1" width="98%px">
+                
+                <tr>
+                    <td>类型:</td>
+                    <td>
+                        <input type="text" name="Type" />
+                    </td>
+                </tr>
+
+            </table>
+        }
+    </div>
+</body>
+</html>

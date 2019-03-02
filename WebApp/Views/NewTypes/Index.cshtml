@@ -1,0 +1,191 @@
+﻿
+@{
+    Layout = null;
+}
+@using NewModel
+@using NewCommon
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>新闻类型</title>
+    <link href="~/Content/tableStyle.css" rel="stylesheet" />
+    <link href="~/Content/pageBar.css" rel="stylesheet" />
+    <link href="~/Content/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Content/themes/icon.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.7.1.min.js"></script>
+    <script src="~/Scripts/jquery.easyui.min.js"></script>
+    <script src="~/Scripts/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#addInfoDiv").css("display", "none");
+            $("#editInfoDiv").css("display", "none");           
+            //删除
+            $(".easyui-linkbutton:contains(删除)").click(function () {
+                deleteInfo($(this).attr("ids"), $(this));
+            });
+            //添加
+            $(".easyui-linkbutton:contains(添加类型)").click(function () {
+                addInfo();
+            });
+            //修改
+            $(".easyui-linkbutton:contains(修改)").click(function () {
+                editInfo($(this).attr("ids"));
+            });
+        });
+
+
+        //删除
+        function deleteInfo(id, control) {
+            $.messager.confirm("提示", "确定要删除该记录吗?", function (r) {
+                if (r) {
+                    $.post("/NewTypes/DeleteNewType", { "id": id }, function (data) {
+                        if (data == "ok") {
+                            $.messager.alert("提示", "删除成功!", "info");
+                            $(control).parent().parent().remove();
+                            location.reload();
+                        } else {
+                            $.messager.alert("提示", "删除 失败!", "info");
+                        }
+                    });
+                }
+            });
+        }
+
+        //添加类型
+        function addInfo() {
+            $("#addInfoFrame").attr("src", "/NewTypes/ShowAddInfo");
+            $("#addInfoDiv").css("display", "block");
+            $('#addInfoDiv').dialog({
+                title: "添加类型",
+                collapsible: true,
+                minimizable: true,
+                width: 300,
+                height: 150,
+                modal: true,
+                buttons: [{
+                    text: '添加',
+                    iconCls: 'icon-ok',
+                    handler: function () {
+                        var childWindow = $("#addInfoFrame")[0].contentWindow;
+                        childWindow.SubForm();//提交表单
+                        $('#addInfoDiv').dialog('close');
+                    }
+                }, {
+                    text: '取消',
+                    handler: function () {
+                        $('#addInfoDiv').dialog('close');
+                    }
+                }]
+            });
+        }
+
+        //添加完成以后执行该方法
+        function afterAdd(serverData) {
+            // var data = $.parseJSON(serverData);
+            var data = serverData;
+            $('#addInfoDiv').dialog('close');
+            $.messager.alert("提示", "添加成功!", "info");
+        }
+
+        //编辑信息
+        function editInfo(id) {
+            $("#editInfoFrame").attr("src", "/NewTypes/ShowEdit/?id=" + id);
+            $("#editInfoDiv").css("display", "block");
+            $('#editInfoDiv').dialog({
+                title: "编辑信息",
+                collapsible: true,
+                minimizable: true,
+                width: 300,
+                height: 150,
+                modal: true,
+                buttons: [{
+                    text: '修改',
+                    iconCls: 'icon-ok',
+                    handler: function () {
+                        var childWindow = $("#editInfoFrame")[0].contentWindow;
+                        childWindow.SubForm();//提交表单
+                        $('#editInfoDiv').dialog('close');
+                    }
+                }, {
+                    text: '取消',
+                    handler: function () {
+                        $('#editInfoDiv').dialog('close');
+                    }
+                }]
+            });
+        }
+
+        //编辑完成后
+        function afterEdit(data) {
+            $('#editInfoDiv').dialog('close');
+        }
+
+        //将序列化成json格式后日期(毫秒数)转成日期格式
+        function ChangeDateFormat(cellval) {
+            var date = new Date(parseInt(cellval.replace("/Date(", "").replace(")/", ""), 10));
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            return date.getFullYear() + "-" + month + "-" + currentDate;
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <a href="#" class="easyui-linkbutton" id="adds" data-options="iconCls:'icon-add'">添加类型</a>
+        <div style="float:right">
+            搜索： <input class="easyui-searchbox" data-options="prompt:'根据类型',menu:'#mm',searcher:doSearch" style="width:300px" />
+            <script>
+                function doSearch(value, name) {
+                    $.post(
+                        "/AdminNewInfo/Index",
+                        { "value": value },
+                        function (date) {
+                            window.location.href = "/AdminNewInfo/Index/";
+                        }
+                        )
+
+                    @*@Session["value"]=value;
+		            window.location.href = "/AdminNewInfo/Index/";*@
+                }
+            </script>
+        </div>
+        @if (ViewData["pageList"] != null)
+            {
+            <table style="width:100%" id="tabs">
+                <tr><th>类型</th><th style="width:200px">操作</th></tr>
+                @foreach (var typeInfo in (List<TypeInfo>)ViewData["pageList"])
+                {
+                    <tr>
+                        <td>@typeInfo.Type</td>
+                        <td style="width:200px">
+                            <a href="#" class="easyui-linkbutton" ids="@typeInfo.Id" data-options="iconCls:'icon-edit'">修改</a>
+                            <a href="#" class="easyui-linkbutton" ids="@typeInfo.Id" data-options="iconCls:'icon-remove'">删除</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <p class="page_nav">
+                @MvcHtmlString.Create(PageBar.GetPageBar((int)ViewData["pageIndex"], (int)ViewData["pageCount"]))
+            </p>
+        }
+        else
+        {
+            <span>暂无数据</span>
+        }
+    </div>
+
+    <!---------------------添加信息----------------------->
+    <div id="addInfoDiv" style="overflow:hidden">
+        <iframe id="addInfoFrame" scrolling="auto" frameborder="0" style="width:100%;height:100%"></iframe>
+    </div>
+    <!---------------------添加信息结束----------------------->
+    <!---------------编辑用户信息---------------------->
+    <div id="editInfoDiv" style="overflow:hidden">
+        <iframe id="editInfoFrame" scrolling="auto" frameborder="0" style="width:100%;height:100%"></iframe>
+    </div>
+    <!---------------编辑用户信息结束---------------------->
+
+</body>
+</html>

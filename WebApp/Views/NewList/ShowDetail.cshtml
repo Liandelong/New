@@ -1,0 +1,168 @@
+﻿
+@{
+    Layout = null;
+}
+@model NewModel.NewInfo
+@using NewModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+    <title>电子科技大学中山学院新闻网</title>
+    <link href="~/Content/themes/main.css" rel="stylesheet" />
+    <link href="/WebDemos/style/style.css" type="text/css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            loadComment();
+            $("#btnComment").click(function () {
+                addComment();
+            });
+            //发布评论
+            function addComment() {
+                var msg = $("#txtMsg").val();
+                if (msg !="") {
+                    var newId=@Model.Id
+                    $.post("/NewList/AddComment", { "id": newId, "msg": msg }, function (data) {
+                        if (data == "ok") {
+                            $("#commentList").html("");
+                            loadComment();
+                            $("#txtMsg").val("");
+                        } else {
+                            $("#errorMsg").text("评论添加失败!!");
+                        }
+                    });
+                } else {
+                    $("#errorMsg").text("评论内容不能为空!!");
+                }
+
+            }
+            function loadComment() {
+                var newId =@Model.Id
+                $.post("/NewList/LoadComment", { "id": newId }, function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        $("<li><span>" + data[i].Msg + "</span><span>" + data[i].CreateDateTime + ":</span></li>").appendTo("#commentList");
+                    }
+                });
+            }
+
+            $("#iShow").click(function () {
+                if ($("#iHover").css("display") == "none") {
+                    $("#iHover").css("display", "block");
+                }
+                else {
+                    $("#iHover").css("display", "none");
+                }
+            });
+
+        });
+    </script>
+</head>
+<body class="body_column">
+    <div id="wrap_column">
+        <!----------------------------------begin header_column---------------------------------->
+        <div class="newsHeader">
+            <div class="newsLogo"><a href="/article/tack-home.html"><img src="/images/news_logo.jpg" /></a></div>
+        </div>
+        <div class="newsNav" id="newsMenu">
+            <ul>
+                <li><a href="http://www.zsc.edu.cn/">学校主页</a></li>
+
+                <li class="iHover iShow">
+                    <a href="#" id="iShow">新闻类型</a>
+                    <ul id="iHover" style="display: none;">
+                        @if (ViewData["TypeInfoList"] != null)
+                        {
+                            foreach (TypeInfo typeInfo in (List<TypeInfo>)ViewData["TypeInfoList"])
+                            {
+                                <li><a href="/NewList/ShowDetail/?id=@typeInfo.Id" target="_blank">@typeInfo.Type</a></li>
+                            }
+                        }
+                    </ul>
+                </li>
+
+                <li><a href="/Login/Index">新闻管理</a></li>
+
+                <li><a href="/NewsMain.html">用户登录</a></li>
+
+                <li><a href="/NewsMain.html">用户注册</a></li>
+
+            </ul>
+        </div>
+        <!----------------------------------end header_column---------------------------------->
+        <!----------------------------------begin main_column---------------------------------->
+        <div id="main_column">
+            <div id="sidebar_column">
+                <h2 class="title_news">新闻中心</h2>
+                <br />
+                <br />
+                <hr />
+                <div style="text-align:center"><strong style="padding: 21px 0 0 32px">新闻搜索</strong></div>
+                <hr />
+                <br />
+                <div style="text-align:center">
+                    搜索： <input class="easyui-searchbox" data-options="prompt:'根据新闻标题',menu:'#mm',searcher:doSearch" />
+                    <script>
+                        function doSearch(value, name) {
+                            window.location.href = "/AdminNewInfo/Index/?value=" + value;
+                        }
+                    </script>
+                </div>
+                <br />
+                <br />
+
+                <hr />
+                <div style="text-align:center"><strong style="padding: 21px 0 0 32px;color:red">热点新闻</strong></div>
+                <hr />
+                <br />
+                <div>
+                    <ul class="list_news">
+                        @if (ViewData["newInfoList"] != null)
+                        {
+                            for(int i=0;i<5;i++)
+                            {
+                                <li><a href="/NewList/ShowDetail/?id=1" target="_blank">@i</a></li>
+                            }
+                        }
+                        else
+                        {
+                            <li>暂无数据</li>
+                        }
+                    </ul>
+                </div>
+                <br />
+
+                <hr />
+                <div style="text-align:center"><strong style="padding: 21px 0 0 32px;color:blue">微信平台</strong></div>
+                <hr />
+                <br />
+                <div class="newsDetailerweima"><img src="/images/article_weixin.jpg"></div>
+                <div class="newsDetailerweima"><img src="/images/erweima02.jpg"></div>
+                @*<dl class="menu_prd"></dl>*@
+            </div>
+            <div id="content_column">
+                <div class="position"><a class="graylink" href="http://localhost:51129/NewList/Index">首页</a>&nbsp;&lt;&nbsp;<a class="graylink" href="http://localhost:51129/NewList/Index">新闻中心</a>&nbsp;&lt;&nbsp;<span class="color0range">新闻详情</span></div>
+                <div class="cont">
+                    <h1 class="title">@Model.Title</h1>
+                    <p class="info">@Model.Author   @Model.SubDateTime.ToString("yyyy-MM-dd")</p>
+                    <p style="text-align:center">@MvcHtmlString.Create(Model.Msg)</p>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="cont">
+            <ul class="list_news" id="commentList"></ul>
+        </div>
+        <div style="margin-left:230px">
+            <textarea id="txtMsg" rows="8" cols="100"></textarea>
+            <input type="button" value="发布评论" id="btnComment" />
+            <span id="errorMsg" style="font-size:12px;color:red"></span>
+        </div>
+        <div id="logincopyright" style="text-align:center">
+            <p>2018年---电子科技大学中山学院</p>
+        </div>
+    </div>
+</body>
+</html>
