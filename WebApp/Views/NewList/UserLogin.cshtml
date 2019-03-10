@@ -2,28 +2,23 @@
 @{
     Layout = null;
 }
+@model NewModel.NewInfo
 @using NewModel
-@using NewCommon
 <!DOCTYPE html>
 
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
-    <title>电子科技大学中山学院新闻网</title>
+    <meta name="viewport" content="width=device-width" />
+    <title>UserLogin</title>
     <link href="/WebDemos/style/style.css" type="text/css" rel="stylesheet" />
-    <link href="~/Content/themes/main.css" rel="stylesheet" />
-    <link href="~/Content/pageBar.css" rel="stylesheet" />
-
     <link href="~/Content/main.css" rel="stylesheet" />
-
-    <link href="~/Content/tableStyle.css" rel="stylesheet" />
     <link href="~/Content/themes/default/easyui.css" rel="stylesheet" />
     <link href="~/Content/themes/icon.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-1.7.1.min.js"></script>
     <script src="~/Scripts/jquery.easyui.min.js"></script>
     <script src="~/Scripts/easyui-lang-zh_CN.js"></script>
-
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/MyAjaxForm.js"></script>
     <script type="text/javascript">
         $(function () {
             $("#iShow").click(function () {
@@ -34,23 +29,26 @@
                     $("#iHover").css("display", "none");
                 }
             });
-        });
-    </script>
-
-    <style>
-        .newsDetailerweima {
-            margin: 15px 20px;
-            width: 65px;
-            display: inline-block;
-            _float: left;
+        });         
+        function afterAdd(data) {
+            if (data == "登录成功") {
+                //$('#errorMsg').css('color', 'green');
+                //$('#errorMsg').text(data);
+                window.location.href = "/NewList/Index"
+            }
+            else
+            {
+                $('#errorMsg').text(data);
+            }
+          
         }
-    </style>
+    </script>
 </head>
-<body class="body_column">
+<body>
     <div id="wrap_column">
         <!----------------------------------begin header_column---------------------------------->
         <div class="newsHeader">
-            <div class="newsLogo"><a href="#"><img src="/images/news_logo.jpg" /></a></div>
+            <div class="newsLogo"><a href="/article/tack-home.html"><img src="/images/news_logo.jpg" /></a></div>
         </div>
         <div class="newsNav" id="newsMenu">
             <ul>
@@ -61,13 +59,13 @@
                 <li class="iHover iShow">
                     <a href="#" id="iShow">新闻类型</a>
                     <ul id="iHover" style="display: none;">
-                       @if (ViewData["TypeInfoList"] != null)
-                       {
-                           foreach (TypeInfo typeInfo in (List<TypeInfo>)ViewData["TypeInfoList"])
-                           {
-                            <li><a href="/NewList/Index/?TypeId=@typeInfo.Id" >@typeInfo.Type</a></li>
-                           }
-                       }
+                        @if (ViewData["TypeInfoList"] != null)
+                        {
+                            foreach (TypeInfo typeInfo in (List<TypeInfo>)ViewData["TypeInfoList"])
+                            {
+                                <li><a href="/NewList/Index/?TypeId=@typeInfo.Id" target="_blank">@typeInfo.Type</a></li>
+                            }
+                        }
                     </ul>
                 </li>
 
@@ -81,21 +79,18 @@
 
                 <li></li>
 
-               @if (ViewData["Tourist"] != null)
-               {
-                   UserInfo user = (UserInfo)ViewData["Tourist"];
-                <li ><a>欢迎<strong style="color:red">@user.UserName</strong>登录</a></li>
-               }
-               
+                @if (ViewData["Tourist"] != null)
+                {
+                    UserInfo user = (UserInfo)ViewData["Tourist"];
+                    <li><a>欢迎<strong style="color:red">@user.UserName</strong>登录</a></li>
+                }
             </ul>
-            
         </div>
         <!----------------------------------end header_column---------------------------------->
         <!----------------------------------begin main_column---------------------------------->
         <div id="main_column">
             <div id="sidebar_column">
                 <h2 class="title_news">新闻中心</h2>
-                
                 <br />
                 <br />
                 <hr />
@@ -142,35 +137,49 @@
                 <div class="newsDetailerweima"><img src="/images/erweima02.jpg"></div>
                 @*<dl class="menu_prd"></dl>*@
             </div>
-            <div id="content_column">
-                <div class="position"><a class="graylink" href="http://localhost:51129/NewList/Index">首页</a>&nbsp;&lt;&nbsp;<span class="color0range">新闻中心</span></div>
-                <div class="cont">
-                    <ul class="list_news">
-                        @if (ViewData["newInfoList"] != null)
-                        {
-                            foreach (NewInfo newInfo in (List<NewInfo>)ViewData["newInfoList"])
+            <div align="center" style="position: absolute;  top:50%;left:50%;">
+                    <label style="color:red;font-weight:900">新闻网用户登陆</label>
+                    <br />   
+                    <table cellpadding="5">
+                        <tbody>
+                            @using (Ajax.BeginForm("UserLoginButton", new { }, new AjaxOptions() { OnSuccess = "afterAdd" }, new { id = "addForm" }))
                             {
-                                <li><span>@newInfo.SubDateTime.ToString("yyyy年MM月dd日")</span><a href="/NewList/ShowDetail/?id=@newInfo.Id" target="_blank">@newInfo.Title</a></li>
+                                <tr>
+                                    <td width="120" align="right">
+                                        登录帐号：
+                                    </td>
+                                    <td width="232">
+                                        <input type="text" name="userName" id="UserName" class="input" maxlength="32" size="24" style="width:150px;height:20px" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="120" align="right">
+                                        密码：
+                                    </td>
+                                    <td width="232">
+                                        <input type="password" name="userPwd" id="password" class="input" maxlength="32" size="24" style="width:150px; height:20px">
+                                    </td>
+                                </tr>
+                                    <tr>
+                                        <td align="center" colspan="2">
+                                            <br>
+                                            <input type="submit" value="登 录" class="button"  onclick="validate(this)">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <input type="reset" class="button" value="重 置" id="button2" name="button2"><span style="color:red" id="errorMsg"></span>
+                                        </td>
+                                    </tr>
                             }
-                        }
-                        else
-                        {
-                            <li>暂无数据</li>
-                        }
-
-
-                    </ul>
-                    <div class="page_nav">@MvcHtmlString.Create(PageBar.GetPageBar((int)ViewData["pageIndex"], (int)ViewData["pageCount"]))</div>
-                </div>
+                        </tbody>
+                    </table>
             </div>
-            <div class="clear"></div>
         </div>
-        <hr />
-        <div  id="logincopyright" style="text-align:center; background-image: url('../../Content/Images/bg3.png');">
+
+        <div id="logincopyright" style="text-align:center; background-image: url('../../Content/Images/bg3.png');">
             <p style="color:blue">2019年---电子科技大学中山学院</p>
             <p style="color:blue">电子邮箱：1147732739@qq.com</p>
             <p style="color:blue">地址：广东省中山市石岐区电子科技大学中山学院</p>
         </div>
     </div>
+
 </body>
 </html>

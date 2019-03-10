@@ -8,7 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 namespace NewDAL
 {
-  public  class NewInfoDAL
+    public class NewInfoDAL
     {
         /// <summary>
         /// 获取分页数据
@@ -16,7 +16,7 @@ namespace NewDAL
         /// <param name="start">起始位置</param>
         /// <param name="end">终止位置</param>
         /// <returns></returns>
-        public List<NewInfo> GetPageEntityList(int start,int end)
+        public List<NewInfo> GetPageEntityList(int start, int end)
         {
             string sql = "select * from (select row_number() over(order by id desc) as num,* from NewsAndType) as N where N.num between @start and @end";
             SqlParameter[] pars = {
@@ -25,8 +25,8 @@ namespace NewDAL
             };
             pars[0].Value = start;
             pars[1].Value = end;
-            DataTable table= SqlHelper.GetTable(sql, CommandType.Text, pars);
-            List<NewInfo> list=null;
+            DataTable table = SqlHelper.GetTable(sql, CommandType.Text, pars);
+            List<NewInfo> list = null;
             if (table.Rows.Count > 0)
             {
                 list = new List<NewInfo>();
@@ -34,7 +34,7 @@ namespace NewDAL
                 foreach (DataRow row in table.Rows)
                 {
                     newInfo = new NewInfo();
-                    LoadEntity(row,newInfo);
+                    LoadEntity(row, newInfo);
                     list.Add(newInfo);
                 }
             }
@@ -49,15 +49,15 @@ namespace NewDAL
         private void LoadEntity(DataRow row, NewInfo newInfo)
         {
             newInfo.Author = row["Author"] != DBNull.Value ? row["Author"].ToString() : string.Empty;
-            newInfo.Title= row["Title"] != DBNull.Value ? row["Title"].ToString() : string.Empty;
+            newInfo.Title = row["Title"] != DBNull.Value ? row["Title"].ToString() : string.Empty;
             newInfo.Msg = row["Msg"] != DBNull.Value ? row["Msg"].ToString() : string.Empty;
             newInfo.ImagePath = row["ImagePath"] != DBNull.Value ? row["ImagePath"].ToString() : string.Empty;
             newInfo.SubDateTime = Convert.ToDateTime(row["SubDateTime"]);
             newInfo.Id = Convert.ToInt32(row["Id"]);
-            newInfo.Type =row["Type"].ToString();
+            newInfo.Type = row["Type"].ToString();
             newInfo.TypeId = Convert.ToInt32(row["TypeId"]);
         }
-        
+
         /// <summary>
         /// 获取新闻总条数
         /// </summary>
@@ -113,10 +113,10 @@ namespace NewDAL
                                    new SqlParameter("@SubDateTime",SqlDbType.DateTime),
                                    new SqlParameter("@TypeId",SqlDbType.Int,100)
                                  };
-            pars[0].Value = newInfo.Title;
-            pars[1].Value = newInfo.Msg;
-            pars[2].Value = newInfo.Author;
-            pars[3].Value = newInfo.SubDateTime;
+            pars[0].Value = newInfo.Title==null?"": newInfo.Title;
+            pars[1].Value = newInfo.Msg == null ? "" : newInfo.Msg;
+            pars[2].Value = newInfo.Author == null ? "" : newInfo.Author;
+            pars[3].Value = newInfo.SubDateTime == null ? DateTime.Now : newInfo.SubDateTime;
             pars[4].Value = newInfo.TypeId;
             return SqlHelper.ExcuteNonQuery(sql, CommandType.Text, pars);
         }
@@ -152,9 +152,24 @@ namespace NewDAL
         /// <param name="start">起始位置</param>
         /// <param name="end">终止位置</param>
         /// <returns></returns>
-        public List<NewInfo> GetPageEntityList(int start, int end,string newsName)
+        public List<NewInfo> GetPageEntityList(int start, int end, string newsName)
         {
-            string sql = "select * from (select row_number() over(order by id desc) as num,* from (select * from NewsAndType where Title like '%'+@newsName + '%' or Author like '%'+@newsName + '%' or Type like '%'+@newsName + '%') as new ) as N where N.num between @start and @end";
+            string sql;
+            if (newsName[0] == '%'|| newsName[0] == '#')
+            {
+                if (newsName[0] == '%')
+                {
+                    sql = "select * from (select row_number() over(order by id desc) as num,* from (select * from NewsAndType where Title like '%'+@newsName + '%') as new ) as N where N.num between @start and @end";
+                }
+                else
+                {
+                    sql = "select * from NewsAndType where  TypeId=@newsName";
+                }
+                }
+            else
+            {
+                sql = "select * from (select row_number() over(order by id desc) as num,* from (select * from NewsAndType where Title like '%'+@newsName + '%' or Author like '%'+@newsName + '%' or Type like '%'+@newsName + '%') as new ) as N where N.num between @start and @end";
+            }
             SqlParameter[] pars = {
                 new SqlParameter("@start",DbType.Int32),
                 new SqlParameter("@end",DbType.Int32),
@@ -162,7 +177,7 @@ namespace NewDAL
             };
             pars[0].Value = start;
             pars[1].Value = end;
-            pars[2].Value = newsName;
+            pars[2].Value = newsName.Substring(1, newsName.Length - 1);
             DataTable table = SqlHelper.GetTable(sql, CommandType.Text, pars);
             List<NewInfo> list = null;
             if (table.Rows.Count > 0)
@@ -185,11 +200,59 @@ namespace NewDAL
         /// <returns></returns>
         public int GetRecordCount(string newsName)
         {
-            string sql = "select count(*) from (select row_number() over(order by id desc) as num,* from (select * from NewsAndType where Title like '%'+@newsName + '%' or Author like '%'+@newsName + '%' or Type like '%'+@newsName + '%') as new ) as N";
+            string sql;
+            if (newsName[0] == '%'|| newsName[0] == '#')
+            {
+                if(newsName[0] == '%')
+                {
+                    sql = "select count(*) from (select row_number() over(order by id desc) as num,* from (select * from NewsAndType where Title like '%'+@newsName + '%') as new ) as N";
+                }
+                else
+                {
+                    sql = "select count(*) from NewsAndType where TypeId=@newsName ";
+                }
+                
+            }
+            else
+            {
+                sql = "select count(*) from (select row_number() over(order by id desc) as num,* from (select * from NewsAndType where Title like '%'+@newsName + '%' or Author like '%'+@newsName + '%' or Type like '%'+@newsName + '%') as new ) as N";
+            }
             SqlParameter par = new SqlParameter("@newsName", SqlDbType.NVarChar);
-            par.Value = newsName;
-            int count = Convert.ToInt32(SqlHelper.ExcuteScalar(sql, CommandType.Text,par));
+            par.Value = newsName.Substring(1, newsName.Length - 1);
+            int count = Convert.ToInt32(SqlHelper.ExcuteScalar(sql, CommandType.Text, par));
             return count;
+        }
+
+        public List<NewInfo> GetHostNews()
+        {
+            //获取前五条评论最多的新闻
+            string sql = "select * from News where Id in(select top 5 NewId from NewsComments Group by NewId  order by COUNT(NewId) desc)";           
+            DataTable table = SqlHelper.GetTable(sql, CommandType.Text);
+            List<NewInfo> list = null;
+            if (table.Rows.Count >0)
+            {
+                list = new List<NewInfo>();
+                NewInfo newInfo = null;
+                foreach (DataRow row in table.Rows)
+                {
+                    newInfo = new NewInfo();
+                    LoadHostEntity(row, newInfo);
+                    list.Add(newInfo);
+                }
+            }
+            
+            return list;
+        }
+
+        //实例化热点新闻
+        private void LoadHostEntity(DataRow row, NewInfo newInfo)
+        {
+            newInfo.Author = row["Author"] != DBNull.Value ? row["Author"].ToString() : string.Empty;
+            newInfo.Title = row["Title"] != DBNull.Value ? row["Title"].ToString() : string.Empty;
+            newInfo.Msg = row["Msg"] != DBNull.Value ? row["Msg"].ToString() : string.Empty;
+            newInfo.ImagePath = row["ImagePath"] != DBNull.Value ? row["ImagePath"].ToString() : string.Empty;
+            newInfo.SubDateTime = Convert.ToDateTime(row["SubDateTime"]);
+            newInfo.Id = Convert.ToInt32(row["Id"]);
         }
     }
 }

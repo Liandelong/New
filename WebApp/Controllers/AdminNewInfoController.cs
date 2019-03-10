@@ -11,6 +11,7 @@ namespace WebApp.Controllers
     {
         //新闻分页显示
         NewInfoBLL newInfoBLL = new NewInfoBLL();
+        UserInfoBLL userInfoBLL = new UserInfoBLL();
         // GET: AdminNewInfo
         public ActionResult Index()
         {         
@@ -19,10 +20,10 @@ namespace WebApp.Controllers
                 var result = Request["value"];
                 int pageIndex = Request["pageIndex"] != null ? Convert.ToInt32(Request["pageIndex"]) : 1;
                 int pageSize = 5;
-                int pageCount = newInfoBLL.GetPageCount(pageSize, Request["value"].ToString());
+                int pageCount = newInfoBLL.GetPageCount(pageSize,"1"+ Request["value"].ToString());
                 pageIndex = pageIndex < 1 ? 1 : pageIndex;
                 pageIndex = pageIndex > pageCount ? pageCount : pageIndex;
-                List<NewInfo> list = newInfoBLL.GetPageEntityList(pageIndex, pageSize, Request["value"].ToString());
+                List<NewInfo> list = newInfoBLL.GetPageEntityList(pageIndex, pageSize, "1" + Request["value"].ToString());
                 ViewData["pageList"] = list;
                 ViewData["pageIndex"] = pageIndex;
                 ViewData["pageCount"] = pageCount;             
@@ -58,6 +59,37 @@ namespace WebApp.Controllers
             ViewData["pageIndex"] = pageIndex;
             ViewData["pageCount"] = pageCount;
             return View();
+        }
+
+        /// <summary>
+        /// 获取游客
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Tourist()
+        {
+            int pageIndex = Request["pageIndex"] != null ? Convert.ToInt32(Request["pageIndex"]) : 1;
+            int pageSize = 5;
+            int pageCount = userInfoBLL.GetTouristCount(pageSize);
+            pageIndex = pageIndex < 1 ? 1 : pageIndex;
+            pageIndex = pageIndex > pageCount ? pageCount : pageIndex;
+            List<UserInfo> list = userInfoBLL.GetTourist(pageIndex, pageSize);
+            ViewData["pageList"] = list;
+            ViewData["pageIndex"] = pageIndex;
+            ViewData["pageCount"] = pageCount;
+            return View();
+        }
+
+        public ActionResult DeleteTourist(int id)
+        {
+           var result= userInfoBLL.IsDelete(id);
+            if (result)
+            {
+                return Content("ok");
+            }
+            else
+            {
+                return Content("no");
+            }
         }
 
         /// <summary>
@@ -119,7 +151,7 @@ namespace WebApp.Controllers
         }
 
         //添加新闻信息
-        [ValidateInput(false)]
+        //[ValidateInput(false)]
         public ActionResult AddNewInfo(NewInfo newInfo)
         {
             //注意Upload：目录是编辑器的目录要加上，还要添加LitJson，然后生成一下

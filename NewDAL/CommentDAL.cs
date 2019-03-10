@@ -88,15 +88,17 @@ namespace NewDAL
         /// <returns></returns>
         public int InsertEntityModel(NewsComments newCommentInfo)
         {
-            string sql = "insert into NewsComments(NewId,Msg,CreateDateTime) values(@NewId,@Msg,@CreateDateTime)";
+            string sql = "insert into NewsComments(NewId,UserId,Msg,CreateDateTime) values(@NewId,@UserId,@Msg,@CreateDateTime)";
             SqlParameter[] pars = {
                                  new SqlParameter("@NewId",SqlDbType.Int,4),
+                                 new SqlParameter("@UserId",SqlDbType.Int,4),
                                  new SqlParameter("@Msg",SqlDbType.NVarChar),
                                  new SqlParameter("@CreateDateTime",SqlDbType.DateTime)
                                  };
             pars[0].Value = newCommentInfo.NewId;
-            pars[1].Value = newCommentInfo.Msg;
-            pars[2].Value = newCommentInfo.CreateDateTime;
+            pars[1].Value = newCommentInfo.UserId;
+            pars[2].Value = newCommentInfo.Msg;
+            pars[3].Value = newCommentInfo.CreateDateTime;
             return SqlHelper.ExcuteNonQuery(sql, CommandType.Text, pars);
         }
 
@@ -116,7 +118,17 @@ namespace NewDAL
                 CommentViewModel Comment = null;
                 foreach (DataRow row in da.Rows)
                 {
+                    string sqlString = "select * from UserInfo where  Id=@UserId";
+                    DataTable table = SqlHelper.GetTable(sqlString, CommandType.Text, new SqlParameter("@UserId",Convert.ToInt32(row["UserId"])));
                     Comment = new CommentViewModel();
+                    if (table.Rows.Count > 0)
+                    {
+                        foreach (DataRow Userrow in table.Rows)
+                        {
+                            Comment.UserName = Userrow["UserName"].ToString();
+                           break;
+                        }
+                    }                   
                     Comment.Msg = row["Msg"]==DBNull.Value?null: row["Msg"].ToString();
                     Comment.CreateDateTime= row["CreateDateTime"] == DBNull.Value ? null : row["CreateDateTime"].ToString();
                     CommentList.Add(Comment);

@@ -10,5 +10,6 @@ namespace NewModel
     {
         public string CreateDateTime { get; set; }
         public string Msg { get; set; }
+        public string UserName { get; set; }
     }
 }

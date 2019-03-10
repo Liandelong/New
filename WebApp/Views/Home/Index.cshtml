@@ -64,8 +64,10 @@
     <div data-options="region:'north',border:false" style="height:80px;background:#B3DFDA;padding:10px; overflow:hidden;background-image:url(/Content/Images/bg3.png)">
         
         @*<input type="button" value="注销" id="Back" />*@
-        <a class="login" href="@Url.Action("Index","Login")">注销登陆</a>
-        <p class="txt">欢迎 <strong style="color:red">@ViewBag.user</strong> 登录<small>@DateTime.Now.ToString("yyyy-MM-dd")</small></p>
+        
+        <a style="float:right" class="login" href="@Url.Action("Index","Login")">注销登陆</a>
+        <p class="txt" style="position: absolute;  left:50%;">欢迎 <strong style="color:red">@ViewBag.user</strong> 登录<small>@DateTime.Now.ToString("yyyy-MM-dd")</small></p>
+        <a style="float:left" class="login" href="@Url.Action("Index","NewList")">新闻端首页</a>
     </div>
     <!---------顶部布局结束------------------------------------->
 
@@ -82,7 +84,7 @@
                 <a href="javascript:void(0)" class="detailLink123" url="/Users/ModifyUserPwd">修改密码</a>
             </div>
             <div title="用户信息管理" data-options="iconCls:'icon-edit'" style="overflow:auto;padding:10px;text-align: center">
-                <a href="javascript:void(0)" class="detailLink123" url="/CommentInfo/Index">用户信息</a>
+                <a href="javascript:void(0)" class="detailLink123" url="/AdminNewInfo/Tourist">用户信息</a>
             </div>
             <div title="新闻类型管理" data-options="iconCls:'icon-edit'" style="overflow:auto;padding:10px;text-align: center">
                 <a href="javascript:void(0)" class="detailLink123" url="/NewTypes/Index">类型管理</a>

@@ -13,7 +13,11 @@
     <title>电子科技大学中山学院新闻网</title>
     <link href="~/Content/themes/main.css" rel="stylesheet" />
     <link href="/WebDemos/style/style.css" type="text/css" rel="stylesheet" />
+    <link href="~/Content/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Content/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/main.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-1.7.1.min.js"></script>
+    <script src="~/Scripts/jquery.easyui.min.js"></script>
     <script type="text/javascript">
         $(function () {
             loadComment();
@@ -23,15 +27,19 @@
             //发布评论
             function addComment() {
                 var msg = $("#txtMsg").val();
-                if (msg !="") {
-                    var newId=@Model.Id
+                if (msg != "") {
+                    var newId =@Model.Id
                     $.post("/NewList/AddComment", { "id": newId, "msg": msg }, function (data) {
                         if (data == "ok") {
                             $("#commentList").html("");
                             loadComment();
                             $("#txtMsg").val("");
-                        } else {
+                        }
+                        else if (data == "no") {
                             $("#errorMsg").text("评论添加失败!!");
+                        }
+                        else {
+                            alert(data);
                         }
                     });
                 } else {
@@ -42,8 +50,11 @@
             function loadComment() {
                 var newId =@Model.Id
                 $.post("/NewList/LoadComment", { "id": newId }, function (data) {
+                    if (data == null) {
+                        return;
+                    }
                     for (var i = 0; i < data.length; i++) {
-                        $("<li><span>" + data[i].Msg + "</span><span>" + data[i].CreateDateTime + ":</span></li>").appendTo("#commentList");
+                        $("<li><span>" + data[i].Msg + "&nbsp;&nbsp;&nbsp;&emsp;" + data[i].CreateDateTime + "</span><span style='color:red'>" + data[i].UserName + ": </span></li>").appendTo("#commentList");
                     }
                 });
             }
@@ -70,6 +81,8 @@
             <ul>
                 <li><a href="http://www.zsc.edu.cn/">学校主页</a></li>
 
+                <li><a href="/NewList/Index">新闻首页</a></li>
+
                 <li class="iHover iShow">
                     <a href="#" id="iShow">新闻类型</a>
                     <ul id="iHover" style="display: none;">
@@ -77,7 +90,7 @@
                         {
                             foreach (TypeInfo typeInfo in (List<TypeInfo>)ViewData["TypeInfoList"])
                             {
-                                <li><a href="/NewList/ShowDetail/?id=@typeInfo.Id" target="_blank">@typeInfo.Type</a></li>
+                                <li><a href="/NewList/Index/?TypeId=@typeInfo.Id" target="_blank">@typeInfo.Type</a></li>
                             }
                         }
                     </ul>
@@ -85,83 +98,99 @@
 
                 <li><a href="/Login/Index">新闻管理</a></li>
 
-                <li><a href="/NewsMain.html">用户登录</a></li>
+                <li><a href="/NewList/UserLogin">用户登录</a></li>
 
-                <li><a href="/NewsMain.html">用户注册</a></li>
+                <li><a href="/NewList/UserRegister">用户注册</a></li>
+
+                <li><a href="/NewList/About">关于我们</a></li>
+
+                <li></li>
+
+                @if (ViewData["Tourist"] != null)
+                {
+                    UserInfo user = (UserInfo)ViewData["Tourist"];
+                    <li><a>欢迎<strong style="color:red">@user.UserName</strong>登录</a></li>
+                }
 
             </ul>
         </div>
         <!----------------------------------end header_column---------------------------------->
         <!----------------------------------begin main_column---------------------------------->
-        <div id="main_column">
-            <div id="sidebar_column">
-                <h2 class="title_news">新闻中心</h2>
-                <br />
-                <br />
-                <hr />
-                <div style="text-align:center"><strong style="padding: 21px 0 0 32px">新闻搜索</strong></div>
-                <hr />
-                <br />
-                <div style="text-align:center">
-                    搜索： <input class="easyui-searchbox" data-options="prompt:'根据新闻标题',menu:'#mm',searcher:doSearch" />
-                    <script>
-                        function doSearch(value, name) {
-                            window.location.href = "/AdminNewInfo/Index/?value=" + value;
-                        }
-                    </script>
-                </div>
-                <br />
-                <br />
-
-                <hr />
-                <div style="text-align:center"><strong style="padding: 21px 0 0 32px;color:red">热点新闻</strong></div>
-                <hr />
-                <br />
-                <div>
-                    <ul class="list_news">
-                        @if (ViewData["newInfoList"] != null)
-                        {
-                            for(int i=0;i<5;i++)
-                            {
-                                <li><a href="/NewList/ShowDetail/?id=1" target="_blank">@i</a></li>
+        <div>
+            <div id="main_column">
+                <div id="sidebar_column">
+                    <h2 class="title_news">新闻中心</h2>
+                    <br />
+                    <br />
+                    <hr />
+                    <div style="text-align:center"><strong style="padding: 21px 0 0 32px">新闻搜索</strong></div>
+                    <hr />
+                    <br />
+                    <div style="text-align:center">
+                        搜索： <input class="easyui-searchbox" data-options="prompt:'根据新闻标题',menu:'#mm',searcher:doSearch" />
+                        <script>
+                            function doSearch(value, name) {
+                                window.location.href = "/NewList/Index/?newName=" + value;
                             }
-                        }
-                        else
-                        {
-                            <li>暂无数据</li>
-                        }
-                    </ul>
-                </div>
-                <br />
+                        </script>
+                    </div>
+                    <br />
+                    <br />
 
-                <hr />
-                <div style="text-align:center"><strong style="padding: 21px 0 0 32px;color:blue">微信平台</strong></div>
-                <hr />
-                <br />
-                <div class="newsDetailerweima"><img src="/images/article_weixin.jpg"></div>
-                <div class="newsDetailerweima"><img src="/images/erweima02.jpg"></div>
-                @*<dl class="menu_prd"></dl>*@
-            </div>
-            <div id="content_column">
-                <div class="position"><a class="graylink" href="http://localhost:51129/NewList/Index">首页</a>&nbsp;&lt;&nbsp;<a class="graylink" href="http://localhost:51129/NewList/Index">新闻中心</a>&nbsp;&lt;&nbsp;<span class="color0range">新闻详情</span></div>
-                <div class="cont">
-                    <h1 class="title">@Model.Title</h1>
-                    <p class="info">@Model.Author   @Model.SubDateTime.ToString("yyyy-MM-dd")</p>
-                    <p style="text-align:center">@MvcHtmlString.Create(Model.Msg)</p>
+                    <hr />
+                    <div style="text-align:center"><strong style="padding: 21px 0 0 32px;color:red">热点新闻</strong></div>
+                    <hr />
+                    <br />
+                    <div>
+                        <ul class="list_news">
+                            @if (ViewData["hostNews"] != null)
+                            {
+                                foreach (NewInfo newInfo in (List<NewInfo>)ViewData["hostNews"])
+                                {
+                                    <li><a href="/NewList/ShowDetail/?id=@newInfo.Id" target="_blank">@newInfo.Title</a></li>
+                                }
+                            }
+                            else
+                            {
+                                <li>暂无数据</li>
+                            }
+                        </ul>
+                    </div>
+                    <br />
+
+                    <hr />
+                    <div style="text-align:center"><strong style="padding: 21px 0 0 32px;color:blue">微信平台</strong></div>
+                    <hr />
+                    <br />
+                    <div class="newsDetailerweima"><img src="/images/article_weixin.jpg"></div>
+                    <div class="newsDetailerweima"><img src="/images/erweima02.jpg"></div>
+                    @*<dl class="menu_prd"></dl>*@
+                </div>
+                <div id="content_column">
+                    <div class="position"><a class="graylink" href="http://localhost:51129/NewList/Index">首页</a>&nbsp;&lt;&nbsp;<a class="graylink" href="http://localhost:51129/NewList/Index">新闻中心</a>&nbsp;&lt;&nbsp;<span class="color0range">新闻详情</span></div>
+                    <div class="cont">
+                        <h1 class="title">@Model.Title</h1>
+                        <p class="info">@Model.Author   @Model.SubDateTime.ToString("yyyy-MM-dd")</p>
+                        <p style="text-align:center">@MvcHtmlString.Create(Model.Msg)</p>
+                    </div>
+
+                    <div>
+                        <div class="cont">
+                            <ul class="list_news" id="commentList"></ul>
+                        </div>
+                        <div style="float:right">
+                            <textarea id="txtMsg" rows="8" cols="50"></textarea>
+                            <input type="button" value="发布评论" id="btnComment" />
+                            <span id="errorMsg" style="font-size:12px;color:red"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="clear"></div>
-        </div>
-        <div class="cont">
-            <ul class="list_news" id="commentList"></ul>
-        </div>
-        <div style="margin-left:230px">
-            <textarea id="txtMsg" rows="8" cols="100"></textarea>
-            <input type="button" value="发布评论" id="btnComment" />
-            <span id="errorMsg" style="font-size:12px;color:red"></span>
         </div>
         <div id="logincopyright" style="text-align:center">
-            <p>2018年---电子科技大学中山学院</p>
+            <p style="color:blue">2019年---电子科技大学中山学院</p>
+            <p style="color:blue">电子邮箱：1147732739@qq.com</p>
+            <p style="color:blue">地址：广东省中山市石岐区电子科技大学中山学院</p>
         </div>
     </div>
 </body>

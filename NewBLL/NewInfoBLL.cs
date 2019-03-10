@@ -99,5 +99,14 @@ namespace NewBLL
         {
             return newInfoDAL.UpdateEntityModel(newInfo) > 0;
         }
+
+        /// <summary>
+        /// 获取热点新闻
+        /// </summary>
+        /// <returns></returns>
+        public List<NewInfo> GetHostNews()
+        {
+            return newInfoDAL.GetHostNews();
+        }
     }
 }
