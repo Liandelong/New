@@ -183,5 +183,10 @@ namespace WebApp.Controllers
             }
         }
 
+        public ActionResult About()
+        {
+            return View();
+        }
+
     }
 }

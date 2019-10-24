@@ -151,7 +151,7 @@ namespace WebApp.Controllers
         }
 
         //添加新闻信息
-        //[ValidateInput(false)]
+        [ValidateInput(false)]
         public ActionResult AddNewInfo(NewInfo newInfo)
         {
             //注意Upload：目录是编辑器的目录要加上，还要添加LitJson，然后生成一下

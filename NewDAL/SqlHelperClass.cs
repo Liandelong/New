@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace NewDAL
 {
-  public static  class SqlHelper
+    public class SqlHelperClass
     {
-        private static readonly string connStr = ConfigurationManager.ConnectionStrings["connStr"].ConnectionString;
+        private  static readonly string connStr = ConfigurationManager.ConnectionStrings["connStr"].ConnectionString;
 
         /// <summary>
         /// 查询数据
@@ -19,13 +20,13 @@ namespace NewDAL
         /// <param name="type">存储过程类型</param>
         /// <param name="pars">参数</param>
         /// <returns></returns>
-        public static DataTable GetTable(string sql,CommandType type,params SqlParameter[] pars)
+        public  DataTable GetTable(string sql, CommandType type, params SqlParameter[] pars)
         {
-            using(SqlConnection con=new SqlConnection(connStr))
+            using (SqlConnection con = new SqlConnection(connStr))
             {
-                using(SqlDataAdapter adapter=new SqlDataAdapter(sql,con))
+                using (SqlDataAdapter adapter = new SqlDataAdapter(sql, con))
                 {
-                    adapter.SelectCommand.CommandType =type;
+                    adapter.SelectCommand.CommandType = type;
                     if (pars != null)
                     {
                         adapter.SelectCommand.Parameters.AddRange(pars);
@@ -45,11 +46,11 @@ namespace NewDAL
         /// <param name="type">存储过程类型</param>
         /// <param name="pars">参数</param>
         /// <returns></returns>
-        public static int ExcuteNonQuery(string sql,CommandType type,params SqlParameter[] pars)
+        public  int ExcuteNonQuery(string sql, CommandType type, params SqlParameter[] pars)
         {
             using (SqlConnection con = new SqlConnection(connStr))
             {
-                using(SqlCommand com=new SqlCommand(sql, con))
+                using (SqlCommand com = new SqlCommand(sql, con))
                 {
                     com.CommandType = type;
                     if (pars != null)
@@ -79,11 +80,11 @@ namespace NewDAL
         /// <param name="type">存储过程类型</param>
         /// <param name="pars">参数</param>
         /// <returns></returns>
-        public static object ExcuteScalar(string sql,CommandType type,params SqlParameter[] pars)
+        public  object ExcuteScalar(string sql, CommandType type, params SqlParameter[] pars)
         {
-            using(SqlConnection con=new SqlConnection(connStr))
+            using (SqlConnection con = new SqlConnection(connStr))
             {
-                using(SqlCommand com=new SqlCommand(sql, con))
+                using (SqlCommand com = new SqlCommand(sql, con))
                 {
                     com.CommandType = type;
                     if (pars != null)

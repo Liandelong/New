@@ -13,6 +13,7 @@
             window.top.location.href = "/Home/CheckLogin";
         }
     </script>
+    @*<link href="@Url.Content("~/Content/Login.css")" rel="stylesheet" />*@
     <link href="~/Content/Login.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-1.7.1.min.js"></script>
     <script src="~/Scripts/jquery.validate.min.js"></script>
@@ -94,7 +95,7 @@
                 </div>
                 <div class="panel-c-r">
                     <p>用户登录/LOGIN</p><br />
-                    <p><img src="~/Content/Images/login/Logo.jpg" /></p>
+                    <p><img src=@Url.Content("~/Content/Images/login/Logo.jpg") /></p>
                 </div>
             </div>
             <div class="panel-f">

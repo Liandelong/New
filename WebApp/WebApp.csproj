@@ -543,6 +543,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="KinderEditor\asp.net\bin\LitJSON.dll" />
+    <Content Include="KinderEditor\asp.net\demo.aspx" />
+    <Content Include="KinderEditor\asp.net\README.txt" />
     <Content Include="Scripts\ai.0.22.9-build00167.js" />
     <Content Include="Scripts\ai.0.22.9-build00167.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -550,6 +553,9 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="KinderEditor\asp.net\file_manager_json.ashx" />
+    <Content Include="KinderEditor\asp.net\upload_json.ashx" />
+    <None Include="Properties\PublishProfiles\News.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\easyui-lang-zh_CN.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -568,6 +574,25 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Upload\KinderEditorImages\image\20181126\20181126224740_4875.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20181126\20181126230530_3332.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20181126\20181126232823_2473.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20181127\20181127112655_4021.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20181127\20181127135252_4053.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20181128\20181128130227_3849.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20181128\20181128130301_3797.png" />
+    <Content Include="Upload\KinderEditorImages\image\20181128\20181128132705_0529.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20190120\20190120161931_5193.png" />
+    <Content Include="Upload\KinderEditorImages\image\20190305\20190305204017_0059.png" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503113229_3123.png" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503113631_9660.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503114359_5123.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503114831_6484.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503115222_4770.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503115600_5314.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503120142_1270.jpg" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503120539_6562.png" />
+    <Content Include="Upload\KinderEditorImages\image\20190503\20190503123849_0295.jpg" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -598,12 +623,11 @@
     <Content Include="Views\NewList\UserLogin.cshtml" />
     <Content Include="Views\NewList\UserRegister.cshtml" />
     <Content Include="Views\AdminNewInfo\Tourist.cshtml" />
+    <Content Include="Views\NewList\About.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\" />
-    <Folder Include="KinderEditor\" />
-    <Folder Include="Upload\" />
     <Folder Include="WebDemos\" />
   </ItemGroup>
   <ItemGroup>
