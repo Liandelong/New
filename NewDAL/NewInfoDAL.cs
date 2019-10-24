@@ -18,6 +18,7 @@ namespace NewDAL
         /// <returns></returns>
         public List<NewInfo> GetPageEntityList(int start, int end)
         {
+
             string sql = "select * from (select row_number() over(order by id desc) as num,* from NewsAndType) as N where N.num between @start and @end";
             SqlParameter[] pars = {
                 new SqlParameter("@start",DbType.Int32),
